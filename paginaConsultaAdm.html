@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="pessoasModulo">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- As 3 metatags acima * devem * vir em primeiro lugar na cabeça; qualquer outro conteúdo principal deve vir * depois * dessas tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="img/cesertLogo.jpg">
+    <script src="js/angular.min.js"></script>
+
+    <title>Cesert</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <script src="controller/pessoas.js"></script>
+
+    <!-- Estilos personalizados para este modelo -->
+    <link href="css/starter-template.css" rel="stylesheet">
+
+  </head>
+
+  <body ng-controller="pessoasController">
+
+    <!-- MENU GERAL -->
+    <div ng-include src="'menuAdm.html'"></div>
+
+    <br>
+
+    <div class="container">
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs" role="tablist">
+          <li role="presentation" class="active"><a href="#consultarUsuario" aria-controls="consultarUsuario" role="tab" data-toggle="tab">Consulta Usuários</a></li>
+          <li role="presentation"><a href="#consultarFuncionario" aria-controls="consultarFuncionario" role="tab" data-toggle="tab">Consulta Funcionarios</a></li>
+          <li role="presentation"><a href="#consultarDespesa" aria-controls="consultarDespesa" role="tab" data-toggle="tab">Consultar Despesas</a></li>
+          <li role="presentation"><a href="#consultarMensalidade" aria-controls="consultarMensalidade" role="tab" data-toggle="tab">Consultar Mensalidades</a></li>
+          <li role="presentation"><a href="#consultarValorSaldo" aria-controls="consultarValorSaldo" role="tab" data-toggle="tab">Consultar Valor Saldo</a></li>
+        </ul>
+
+      <!-- Tab panes -->
+      <div class="tab-content">
+        <!-- ALTERAR CADASTRO USUARIO -->
+        <div role="tabpanel" class="tab-pane active" id="consultarUsuario">
+        <br>
+          <div class="container">
+            <br>
+            <form class="form-horizontal">
+              	<div class="form-group">
+                <label for="pesquisa" class="col-sm-2 control-label">Pesquisar</label>
+                <div class="col-sm-5">
+                  <input type="text" ng-model="pesquisaPessoa" class="form-control" id="pesquisaPes" placeholder="Digita o nome">
+                </div>
+                  <button type="reset" ng-click="limparCampos()" class="btn btn-default">Limpar</button>
+                  <button type="button" class="btn btn-info">Listar</button>
+                  <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modal-editar-usuario">Editar</button>
+                  <button type="button" class="btn btn-danger">Excluir</button>
+                </div>
+            </form>
+          </div><!-- /.container -->
+          <br>
+          <div class="borda"></div>
+
+          <!-- Tabela para listar os usuários -->
+          <table class="table table-striped table-hover">
+            <th>Código</th>
+            <th>CPF</th>
+          	<th>Nome completo</th>
+          	<th>Instituição</th>
+          	<th>Curso</th>
+            <th>Matrícula</th>
+          	<th>Período atual</th>
+          	<th>Data final do curso</th>
+            <th>Editar / Excuir</th>
+          	<tr ng-repeat="pessoaTabela in usuarios | filter:pesquisaPessoa">
+              <td>{{pessoaTabela.codigo}}</td>
+              <td>{{pessoaTabela.cpf}}</td>
+          		<td>{{pessoaTabela.nome}}</td>
+          		<td>{{pessoaTabela.instituicao}}</td>
+          		<td>{{pessoaTabela.curso}}</td>
+              <td>{{pessoaTabela.matricula}}</td>
+          		<td>{{pessoaTabela.periodo}}</td>
+          		<td>{{pessoaTabela.dataFinalCurso}}</td>
+              <td><button type="button" class="btn btn-success" data-toggle="modal" data-target="#modal-editar-usuario" ng-click="selecionaPessoa(pessoaTabela)">Editar</button>
+                  <button type="button" ng-click="excluir()" class="btn btn-danger">Excluir</button></td>
+          	</tr>
+          </table>
+
+          <!--MODAL-->
+          <div class="modal fade" id="modal-editar-usuario" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                  <h4 class="modal-title">Alterar cadastro</h4>
+                </div>
+                <div class="modal-body">
+                <!-- DADOS PESSOAIS --> 
+                  <div class="form-group"> 
+                    <form class="center-from">
+                      <h5 class="featurette-heading"><span class="text-muted">Dados pessoais</span></h5>
+                      <div class="form-group col-sm-4">
+                        <label for="cpf">CPF</label>
+                        <input type="text" ng-model="pessoa.cpf" class="form-control" id="cpf" placeholder="xxx.xxx.xxx-xx">
+                      </div>
+                      <div class="form-group col-sm-4">
+                        <label for="nome">Nome completo</label>
+                        <input type="text" ng-model="pessoa.nome" class="form-control" id="nome" placeholder="Nome completo">
+                      </div>
+                      <div class="form-group col-sm-4">
+                        <label for="rg">RG</label>
+                        <input type="numeric" ng-model="pessoa.rg" class="form-control" id="rg" placeholder="0000000">
+                      </div>
+                      <div class="form-group col-sm-4">
+                        <label for="dataNasc">Data de nascimento</label>
+                        <input type="text" ng-model="pessoa.dataNasc" class="form-control" id="dataNasc" placeholder="dd/mm/aaaa">
+                      </div>
+                      <div class="form-group col-sm-4">
+                        <label for="sexo">Sexo</label>
+                          <select class="form-control" ng-model="pessoa.sexo" ng-options="pessoa.sexo for pessoa in usuarios track by pessoa.codigo">
+                          </select>
+                      </div>
+                      <div class="form-group col-sm-4">
+                        <label for="estadoCivil">Estado civil</label>
+                        <input type="text" ng-model="pessoa.estadoCivil" class="form-control" id="estadoCivil" placeholder="Estado civil">
+                      </div>
+                      <div class="form-group col-sm-4">
+                        <label for="email">Email</label>
+                        <input type="email" ng-model="pessoa.email" class="form-control" id="email" placeholder="example@gmail.com">
+                      </div>
+                      <div class="form-group col-sm-4">
+                        <label for="tipoUsuario">Tipo de usuário</label>
+                        <input type="list" ng-model="pessoa.tipoUsuario" class="form-control" id="tipoUsuario" placeholder="Tipo de usuário">
+                      </div>
+                      <div class="form-group col-sm-4">
+                        <label for="senha">Senha</label>
+                        <input type="password" ng-model="pessoa.senha" class="form-control" id="senha" placeholder="*********">
+                      </div>
+                    </form>
+                  </div>
+                  <br>
+                  <!-- ENDERECO -->
+                  <div class="form-group">
+                    <form class="center-from">
+                      <h5 class="featurette-heading"><span class="text-muted">Endereço</span></h5>
+                      <div class="form-group col-sm-4">
+                        <label for="cep">CEP</label>
+                        <input type="numeric" ng-model="pessoa.cep" class="form-control" id="cep" placeholder="CEP">
+                      </div>
+                      <div class="form-group col-sm-4">
+                        <label for="endereco">Endereço</label>
+                        <input type="text" ng-model="pessoa.endereco" class="form-control" id="endereco" placeholder="Endereço">
+                      </div>
+                      <div class="form-group col-sm-4">
+                        <label for="numeroEnd">Número</label>
+                        <input type="numeric" ng-model="pessoa.numeroEnd" class="form-control" id="numeroEnd" placeholder="Número">
+                      </div>
+                      <div class="form-group col-sm-4">
+                        <label for="bairro">Bairro</label>
+                        <input type="text" ng-model="pessoa.bairro" class="form-control" id="bairro" placeholder="Bairro">
+                      </div>
+                      <div class="form-group col-sm-4">
+                        <label for="cidade">Cidade</label>
+                        <input type="text" ng-model="pessoa.cidade" class="form-control" id="cidade" placeholder="Cidade">
+                      </div>
+                      <div class="form-group col-sm-4">
+                        <label for="uf">UF</label>
+                        <input type="text" ng-model="pessoa.uf" class="form-control" id="uf" placeholder="Estado">
+                      </div>
+                      <div class="form-group col-sm-12">
+                        <label for="complemento">Complemento</label>
+                        <input type="text" ng-model="pessoa.complemento" class="form-control" id="complemento" placeholder="Complemento">
+                      </div>
+                    </form>
+                  </div>
+                  <br>
+                  <!-- ESCOLARIDADE -->
+                  <div class="form-group">
+                    <form class="center-from">
+                      <h5 class="featurette-heading"><span class="text-muted">Escolaridade</span></h5>
+                     <div class="form-group col-sm-4">
+                        <label for="instituicao">Instituição</label>
+                        <input type="text" ng-model="pessoa.instituicao" class="form-control" id="instituicao" placeholder="Instituição">
+                      </div>
+                      <div class="form-group col-sm-4">
+                        <label for="matricula">Matricula</label>
+                        <input type="text" ng-model="pessoa.matricula" class="form-control" id="matricula" placeholder="Matricula">
+                      </div>
+                      <div class="form-group col-sm-4">
+                        <label for="curso">Curso</label>
+                        <input type="text" ng-model="pessoa.curso" class="form-control" id="curso" placeholder="Curso">
+                      </div>
+                      <div class="form-group col-sm-4">
+                        <label for="dataFinalCurso">Data final do curso</label>
+                        <input type="text" ng-model="pessoa.dataFinalCurso" class="form-control" id="dataFinalCurso" placeholder="dd/mm/aaaa">
+                      </div>
+                      <div class="form-group col-sm-4">
+                        <label for="periodoAtual">Periódo atual</label>
+                        <input type="numeric" ng-model="pessoa.periodo" class="form-control" id="periodoAtual" placeholder="Periódo atual">
+                      </div>
+                      <div class="form-group col-sm-4">
+                        <label for="escolaridade">Nível de escolaridade</label>
+                        <input type="text" ng-model="pessoa.escolaridade" class="form-control" id="escolaridade" placeholder="Nível de escolaridade">
+                      </div>
+                    </form>
+                  </div>
+                </div>
+                <br><br><br><br><br><br><br>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-warning" data-dismiss="modal">Cancelar</button>
+                  <button type="submit" ng-click="salvarPessoa()" class="btn btn-primary">Salvar</button>
+                </div>
+              </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+          </div><!-- /.modal -->
+        </div><!-- Nav tabs -->
+
+        <!-- ALTERAR CADASTRO FUNCIONARIO -->
+        <div role="tabpanel" class="tab-pane" id="consultarFuncionario">
+        <br>
+          <div class="container">
+            <br>
+            <form class="form-horizontal">
+              <div class="form-group">
+                <label for="pesquisa" class="col-sm-2 control-label">Pesquisar</label>
+                <div class="col-sm-5">
+                  <input type="text" ng-model="pesquisaFuncionario"  class="form-control" id="pesquisaFunc" placeholder="Digita o nome">
+                </div>
+                  <button type="button" class="btn btn-default">Limpar</button>
+                  <button type="button" class="btn btn-info">Listar</button>
+                  <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modal-editar-funcionario">Editar</button>
+                  <button type="button" class="btn btn-danger">Excluir</button>
+                </div>
+            </form>
+          </div><!-- /.container -->
+          <br>
+          <div class="borda"></div>
+
+          <!-- Tabela para listar os funcionarios -->
+          <table class="table table-striped table-hover">
+            <th>Código</th>
+          	<th>Nome completo</th>
+          	<th>Departamento</th>
+          	<th>Profissão</th>
+            <th>Editar / Excluir</th>
+          	<tr ng-repeat="pessoaTabela in funcionarios | filter:pesquisaFuncionario">
+              <td>{{pessoaTabela.codigo}}</td>
+          		<td>{{pessoaTabela.nome}}</td>
+          		<td>{{pessoaTabela.departamento}}</td>
+          		<td>{{pessoaTabela.profissao}}</td>
+              <td><button type="button" class="btn btn-success" data-toggle="modal" data-target="#modal-editar-funcionario" ng-click="selecionaPessoa(pessoaTabela)">Editar</button>
+                  <button type="button" class="btn btn-danger">Excluir</button></td>
+          	</tr>
+          </table>
+
+          <!--MODAL-->
+          <div class="modal fade" id="modal-editar-funcionario" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                  <h4 class="modal-title">Alterar cadastro</h4>
+                </div>
+                <div class="modal-body">
+                <!-- DADOS PESSOAIS --> 
+                  <div class="form-group"> 
+                    <form class="center-from">
+                      <h5 class="featurette-heading"><span class="text-muted">Dados pessoais</span></h5>
+                      <div class="form-group col-sm-4">
+                        <label for="cpf">CPF</label>
+                        <input type="text" ng-model="funcionario.cpf" class="form-control" id="cpf" placeholder="xxx.xxx.xxx-xx">
+                      </div>
+                      <div class="form-group col-sm-4">
+                        <label for="nome">Nome completo</label>
+                        <input type="text" ng-model="funcionario.nome" class="form-control" id="nome" placeholder="Nome completo">
+                      </div>
+                      <div class="form-group col-sm-4">
+                        <label for="rg">RG</label>
+                        <input type="numeric" ng-model="funcionario.rg" class="form-control" id="rg" placeholder="0000000">
+                      </div>
+                      <div class="form-group col-sm-4">
+                        <label for="dataNasc">Data de nascimento</label>
+                        <input type="text" ng-model="funcionario.dataNasc" class="form-control" id="dataNasc" placeholder="dd/mm/aaaa">
+                      </div>
+                      <div class="form-group col-sm-4">
+                        <label for="sexo">Sexo</label>
+                        <input type="text" ng-model="funcionario.sexo" class="form-control" id="sexo" placeholder="Sexo">
+                      </div>
+                      <div class="form-group col-sm-4">
+                        <label for="estadoCivil">Estado civil</label>
+                        <input type="text" ng-model="funcionario.estadoCivil" class="form-control" id="estadoCivil" placeholder="Estado civil">
+                      </div>
+                      <div class="form-group col-sm-6">
+                        <label for="email">Email</label>
+                        <input type="email" ng-model="funcionario.email" class="form-control" id="email" placeholder="example@gmail.com">
+                      </div>
+                      <div class="form-group col-sm-6">
+                        <label for="tipoUsuario">Tipo de usuário</label>
+                        <input type="list" ng-model="funcionario.tipoUsuario" class="form-control" id="tipoUsuario" placeholder="Tipo de usuário">
+                      </div>
+                    </form>
+                  </div>
+                  <br>
+                  <!-- ENDERECO -->
+                  <div class="form-group">
+                    <form class="center-from">
+                      <h5 class="featurette-heading"><span class="text-muted">Endereço</span></h5>
+                      <div class="form-group col-sm-4">
+                        <label for="cep">CEP</label>
+                        <input type="numeric" ng-model="funcionario.cep" class="form-control" id="cep" placeholder="CEP">
+                      </div>
+                      <div class="form-group col-sm-4">
+                        <label for="endereco">Endereço</label>
+                        <input type="text" ng-model="funcionario.endereco" class="form-control" id="endereco" placeholder="Endereço">
+                      </div>
+                      <div class="form-group col-sm-4">
+                        <label for="numeroEnd">Número</label>
+                        <input type="numeric" ng-model="funcionario.numeroEndr" class="form-control" id="numeroEnd" placeholder="Número">
+                      </div>
+                      <div class="form-group col-sm-4">
+                        <label for="bairro">Bairro</label>
+                        <input type="text" ng-model="funcionario.bairro" class="form-control" id="bairro" placeholder="Bairro">
+                      </div>
+                      <div class="form-group col-sm-4">
+                        <label for="cidade">Cidade</label>
+                        <input type="text" ng-model="funcionario.cidade" class="form-control" id="cidade" placeholder="Cidade">
+                      </div>
+                      <div class="form-group col-sm-4">
+                        <label for="uf">UF</label>
+                        <input type="text" ng-model="funcionario.uf" class="form-control" id="uf" placeholder="Estado">
+                      </div>
+                      <div class="form-group col-sm-12">
+                        <label for="complemento">Complemento</label>
+                        <input type="text" ng-model="funcionario.complemento" class="form-control" id="complemento" placeholder="Complemento">
+                      </div>
+                    </form>
+                  </div>
+                  <br>
+                  <!-- DEPARTAMENTO E PROFISSAO -->
+                  <div class="form-group">
+                    <form class="center-from">
+                      <h5 class="featurette-heading"><span class="text-muted">Departamento e Profissão</span></h5>
+                      <div class="form-group col-sm-6">
+                        <label for="departamento">Departamento</label>
+                        <input type="text" ng-model="funcionario.departamento" class="form-control" id="departamento" placeholder="Departamento">
+                      </div>
+                      <div class="form-group col-sm-6">
+                        <label for="profissao">Profissão</label>
+                        <input type="text" ng-model="funcionario.profissao" class="form-control" id="profissao" placeholder="Profissão">
+                      </div>
+                    </form>
+                  </div>
+                </div>
+                <br><br><br>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-warning" data-dismiss="modal">Cancelar</button>
+                  <button type="submit" ng-click="salvarPessoa()" class="btn btn-primary">Salvar</button>
+                </div>
+              </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+          </div><!-- /.modal -->
+        </div><!-- Nav tabs -->
+
+        <!-- ABA CONSULTAR DESPESAS -->
+        <div role="tabpanel" class="tab-pane" id="consultarDespesa">
+          <div class="container">
+            <form class="form-horizontal">
+            	<h5 class="featurette-heading"><span class="text-muted">Despesas do mês atual</span></h5>
+              	<div class="form-group">
+                	<label for="pesquisa" class="col-sm-2 control-label">Descrição</label>
+                <div class="col-sm-5">
+                  <input type="text" ng-model="pesquisaProduto" class="form-control" id="pesquisaProd" placeholder="Descrição do produto">
+                </div>
+                  <button type="button" class="btn btn-default">Limpar</button>
+                  <button type="button" class="btn btn-info">Listar</button>
+                </div>
+            </form>
+          </div><!-- /.container -->
+          <br>
+          <div class="borda"></div>
+          <div class="container">
+            <form class="center-from">
+              <h5 class="featurette-heading"><span class="text-muted">Filtrar por data</span></h5>
+              <div class="form-group col-sm-6">
+                <label for="dataInicioSaldo">Data início</label>
+                <input type="date" class="form-control" id="dataInicioSaldo" placeholder="dd/mm/aaaa">
+              </div>
+              <div class="form-group col-sm-6">
+                <label for="dataFinalSaldo">Data Final</label>
+                <input type="date" class="form-control" id="dataFinalSaldo" placeholder="dd/mm/aaaa">
+              </div>
+            </form>
+          </div>
+          <div class="center-button" align="center">
+            <button type="button" class="btn btn-primary">Consultar despesas</button>
+          </div>
+          <br>
+          <div class="borda"></div>
+
+          <!-- Tabela consultar despesas -->
+          <table class="table table-striped table-hover">
+            <th>Código</th>
+          	<th>Descrição</th>
+          	<th>Quantidade</th>
+          	<th>Local da compra</th>
+          	<th>Data da compra</th>
+          	<th>Valor da compra</th>
+          	<tr ng-repeat="pessoaTabela in despesas | filter:pesquisaProduto">
+          		<td>{{pessoaTabela.codigo}}</td>
+          		<td>{{pessoaTabela.descricao}}</td>
+          		<td>{{pessoaTabela.qtdProduto}}</td>
+          		<td>{{pessoaTabela.localCompra}}</td>
+          		<td>{{pessoaTabela.dataCompra}}</td>
+              <td>{{pessoaTabela.valorCompra}}</td>
+          	</tr>
+          </table>
+        </div><!-- Nav tabs -->
+
+        <!-- ABA CONSULTAR MENSALIDADE -->
+        <div role="tabpanel" class="tab-pane" id="consultarMensalidade">
+          <div class="container">
+            <h5 class="featurette-heading"><span class="text-muted">Valores do mês atual</span></h5>
+            <form class="form-horizontal">
+              	<div class="form-group">
+                	<label for="pesquisa" class="col-sm-2 control-label">Código</label>
+                <div class="col-sm-5">
+                  <input type="numeric" ng-model="pesquisaMensalidade" class="form-control" id="pesquisaMens" placeholder="Digita o código">
+                </div>
+                  <button type="button" class="btn btn-default">Limpar</button>
+                  <button type="button" class="btn btn-info">Listar</button>
+                </div>
+            </form>
+          </div><!-- /.container -->
+          <br>
+          <div class="borda"></div>
+          <div class="container">
+            <form class="center-from">
+              <h5 class="featurette-heading"><span class="text-muted">Filtrar por data</span></h5>
+              <div class="form-group col-sm-6">
+                <label for="dataInicioSaldo">Data início</label>
+                <input type="date" class="form-control" id="dataInicioSaldo" placeholder="dd/mm/aaaa">
+              </div>
+              <div class="form-group col-sm-6">
+                <label for="dataFinalSaldo">Data Final</label>
+                <input type="date" class="form-control" id="dataFinalSaldo" placeholder="dd/mm/aaaa">
+              </div>
+            </form>
+          </div>
+          <div class="center-button" align="center">
+            <button type="button" class="btn btn-primary">Consultar valores</button>
+          </div>
+          <br>
+          <div class="borda"></div>
+
+          <!-- Tabela consultar mensalidades -->
+          <table class="table table-striped table-hover">
+          	<th>Código</th>
+            <th>cpf</th>
+          	<th>Nome completo</th>
+          	<th>Data de pagamento</th>
+          	<th>Valor do pagamento</th>
+          	<tr ng-repeat="pessoaTabela in mensalidades | filter:pesquisaMensalidade">
+          		<td>{{pessoaTabela.codigo}}</td>
+              <td>{{pessoaTabela.cpf}}</td>
+          		<td>{{pessoaTabela.nome}}</td>
+          		<td>{{pessoaTabela.dataPagamento}}</td>
+          		<td>{{pessoaTabela.valorPago}}</td>
+          	</tr>
+          </table>
+        </div><!-- Nav tabs -->
+
+        <!-- ABA CONSULTAR SALDO -->
+        <div role="tabpanel" class="tab-pane" id="consultarValorSaldo">
+          <div class="container">
+            <form class="center-from">
+              <h5 class="featurette-heading"><span class="text-muted">Valores do mês atual</span></h5>
+              <div class="form-group col-sm-4">
+                <label for="valorTotalDespesa">Valor despesas</label>
+                <input type="numeric" class="form-control" id="valorTotalDespesa" placeholder="00,00">
+              </div>
+              <div class="form-group col-sm-4">
+                <label for="valorTotalRecebido">Valor recebido</label>
+                <input type="numeric" class="form-control" id="valorTotalRecebido" placeholder="00,00">
+              </div>
+              <div class="form-group col-sm-4">
+                <label for="valorSaldoTotal">Saldo Total</label>
+                <input type="numeric" class="form-control" id="valorSaldoTotal" placeholder="00,00">
+              </div>
+            </form>
+          </div>
+          <div class="center-button" align="center">
+            <button type="button" class="btn btn-primary">Consultar valores</button>
+          </div>
+          <br>
+          <div class="borda"></div>
+          <div class="container">
+            <form class="center-from">
+              <h5 class="featurette-heading"><span class="text-muted">Filtrar por data</span></h5>
+              <div class="form-group col-sm-6">
+                <label for="dataInicioSaldo">Data início</label>
+                <input type="date" class="form-control" id="dataInicioSaldo" placeholder="dd/mm/aaaa">
+              </div>
+              <div class="form-group col-sm-6">
+                <label for="dataFinalSaldo">Data Final</label>
+                <input type="date" class="form-control" id="dataFinalSaldo" placeholder="dd/mm/aaaa">
+              </div>
+              <div class="form-group col-sm-4">
+                <label for="valorTotalDespesa">Valor despesas</label>
+                <input type="numeric" class="form-control" id="valorTotalDespesa" placeholder="00,00">
+              </div>
+              <div class="form-group col-sm-4">
+                <label for="valorTotalRecebido">Valor recebido</label>
+                <input type="numeric" class="form-control" id="valorTotalRecebido" placeholder="00,00">
+              </div>
+              <div class="form-group col-sm-4">
+                <label for="valorSaldoTotal">Saldo Total</label>
+                <input type="numeric" class="form-control" id="valorSaldoTotal" placeholder="00,00">
+              </div>
+            </form>
+          </div>
+          <div class="center-button" align="center">
+            <button type="button" class="btn btn-primary">Consultar valores</button>
+          </div>
+          <br>
+          <div class="borda"></div>
+        </div><!-- Nav tabs -->
+      </div><!-- Nav tabs -->
+    </div><!-- Nav tabs -->
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Colocado no final do documento para que as páginas sejam carregadas mais rapidamente -->
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+  </body>
+</html>
